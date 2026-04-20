@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brenda Cardozo — Fotografia</title>
+  <meta name="description" content="Brenda Cardozo, fotógrafa especializada em casamentos, retratos, eventos e lifestyle. Fotografia que conta histórias com sensibilidade e arte." />
+  <meta name="keywords" content="fotógrafa, casamentos, retratos, eventos, lifestyle, Brenda Cardozo, fotografia artística" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       RESET & VARIÁVEIS
+    ============================================= */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --black:      #0a0a0a;
+      --white:      #f9f7f4;
+      --gray-100:   #f0ede8;
+      --gray-300:   #c8c4bc;
+      --gray-500:   #8a8580;
+      --gray-700:   #4a4642;
+      --accent:     #b89a7a;
+      --accent-lt:  #d4bea6;
+
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans:  'Jost', sans-serif;
+
+      --nav-h: 72px;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background: var(--white);
+      color: var(--black);
+      font-family: var(--font-sans);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* =============================================
+       CURSOR PERSONALIZADO
+    ============================================= */
+    .cursor {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s var(--ease), height 0.3s var(--ease), opacity 0.3s;
+      mix-blend-mode: multiply;
+    }
+
+    .cursor-ring {
+      position: fixed;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.12s var(--ease), width 0.3s var(--ease), height 0.3s var(--ease);
+      opacity: 0.6;
+    }
+
+    @media (hover: none) {
+      .cursor, .cursor-ring { display: none; }
+    }
+
+    /* =============================================
+       NAVBAR
+    ============================================= */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5vw;
+      transition: background 0.5s var(--ease), box-shadow 0.5s var(--ease);
+    }
+
+    .navbar.scrolled {
+      background: rgba(249, 247, 244, 0.96);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+    }
+
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      transition: color 0.5s var(--ease);
+    }
+
+    .navbar.scrolled .nav-logo {
+      color: var(--black);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+      transition: color 0.3s, opacity 0.3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--accent);
+      transition: width 0.3s var(--ease);
+    }
+
+    .nav-links a:hover::after { width: 100%; }
+
+    .navbar.scrolled .nav-links a {
+      color: var(--gray-700);
+    }
+
+    .nav-links a:hover { opacity: 1; color: var(--accent) !important; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--white);
+      transition: transform 0.35s var(--ease), opacity 0.35s, background 0.5s;
+    }
+
+    .navbar.scrolled .hamburger span { background: var(--black); }
+
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    /* Mobile menu */
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      background: var(--black);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s var(--ease);
+    }
+
+    .mobile-menu.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .mobile-menu a {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--white);
+      letter-spacing: 0.06em;
+      transition: color 0.3s;
+    }
+
+    .mobile-menu a:hover { color: var(--accent); }
+
+    /* =============================================
+       HERO
+    ============================================= */
+    #inicio {
+      position: relative;
+      height: 100svh;
+      min-height: 600px;
+      overflow: hidden;
+    }
+
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      transform: scale(1.06);
+      transition: transform 8s ease-out;
+    }
+
+    .hero-img.loaded { transform: scale(1); }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.28) 0%,
+        rgba(0,0,0,0.1) 40%,
+        rgba(0,0,0,0.45) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--white);
+      padding: 0 5vw;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.9s 0.3s var(--ease-out) forwards;
+      margin-bottom: 1rem;
+      color: var(--accent-lt);
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(3.2rem, 9vw, 8rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: 0.02em;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 1s 0.55s var(--ease-out) forwards;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent-lt);
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-sans);
+      font-size: clamp(0.78rem, 1.5vw, 0.95rem);
+      font-weight: 200;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-top: 1.4rem;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.9s 0.8s var(--ease-out) forwards;
+    }
+
+    .hero-cta {
+      margin-top: 3rem;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fadeUp 0.9s 1.05s var(--ease-out) forwards;
+    }
+
+    .btn-outline {
+      display: inline-block;
+      padding: 0.85rem 2.6rem;
+      border: 1px solid rgba(255,255,255,0.55);
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      transition: background 0.35s var(--ease), border-color 0.35s, color 0.35s;
+    }
+
+    .btn-outline:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--white);
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      animation: fadeIn 1s 1.5s ease forwards;
+    }
+
+    .hero-scroll span {
+      font-family: var(--font-sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.6), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    /* =============================================
+       SOBRE
+    ============================================= */
+    #sobre {
+      padding: 10rem 5vw;
+    }
+
+    .sobre-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7vw;
+      align-items: center;
+    }
+
+    .sobre-img-wrap {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+    }
+
+    .sobre-img-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 1.5rem -1.5rem -1.5rem 1.5rem;
+      border: 1px solid var(--accent-lt);
+      z-index: -1;
+      transition: inset 0.5s var(--ease);
+    }
+
+    .sobre-img-wrap:hover::after {
+      inset: 2.5rem -2.5rem -2.5rem 2.5rem;
+    }
+
+    .sobre-img-wrap img {
+      transition: transform 0.8s var(--ease);
+    }
+
+    .sobre-img-wrap:hover img {
+      transform: scale(1.04);
+    }
+
+    .sobre-text {
+      padding: 2rem 0;
+    }
+
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 36px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .sobre-text h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 1.8rem;
+    }
+
+    .sobre-text h2 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .sobre-text p {
+      font-size: 0.95rem;
+      color: var(--gray-700);
+      margin-bottom: 1.2rem;
+      line-height: 1.85;
+    }
+
+    .sobre-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 2.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--gray-100);
+    }
+
+    .stat-item h3 {
+      font-family: var(--font-serif);
+      font-size: 2.4rem;
+      font-weight: 300;
+      color: var(--accent);
+    }
+
+    .stat-item p {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin: 0;
+    }
+
+    /* =============================================
+       PROJETOS
+    ============================================= */
+    #projetos {
+      padding: 8rem 5vw;
+      background: var(--gray-100);
+    }
+
+    .projetos-header {
+      max-width: 1200px;
+      margin: 0 auto 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .projetos-header h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 300;
+      line-height: 1.15;
+    }
+
+    .projetos-header h2 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* Filtros */
+    .filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 2.5rem;
+    }
+
+    .filter-btn {
+      background: none;
+      border: 1px solid var(--gray-300);
+      padding: 0.5rem 1.4rem;
+      font-family: var(--font-sans);
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gray-700);
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+
+    /* Grid galeria */
+    .gallery-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+    }
+
+    .gallery-item.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.96);
+    }
+
+    .gallery-item:nth-child(4n+1) { grid-row: span 2; }
+
+    .gallery-item-img {
+      width: 100%;
+      height: 320px;
+      overflow: hidden;
+    }
+
+    .gallery-item:nth-child(4n+1) .gallery-item-img {
+      height: 100%;
+      min-height: 500px;
+    }
+
+    .gallery-item-img img {
+      transition: transform 0.7s var(--ease);
+    }
+
+    .gallery-item:hover .gallery-item-img img {
+      transform: scale(1.07);
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10,10,10,0);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 1.8rem;
+      transition: background 0.45s var(--ease);
+    }
+
+    .gallery-item:hover .gallery-overlay {
+      background: rgba(10,10,10,0.52);
+    }
+
+    .gallery-info {
+      transform: translateY(12px);
+      opacity: 0;
+      transition: transform 0.4s var(--ease), opacity 0.4s var(--ease);
+    }
+
+    .gallery-item:hover .gallery-info {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .gallery-cat {
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent-lt);
+      margin-bottom: 0.3rem;
+    }
+
+    .gallery-title {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-weight: 300;
+      color: var(--white);
+    }
+
+    /* =============================================
+       TESTEMUNHOS
+    ============================================= */
+    #testemunhos {
+      padding: 10rem 5vw;
+      overflow: hidden;
+    }
+
+    .testemunhos-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .testemunhos-header h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 300;
+    }
+
+    .testemunhos-header h2 em { font-style: italic; color: var(--accent); }
+
+    /* Slider */
+    .slider-wrap {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .slider-track {
+      display: flex;
+      transition: transform 0.6s var(--ease);
+    }
+
+    .testimonial {
+      min-width: 100%;
+      padding: 0 2rem;
+      text-align: center;
+    }
+
+    .testimonial-quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--gray-700);
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+
+    .testimonial-quote::before {
+      content: '"';
+      font-family: var(--font-serif);
+      font-size: 6rem;
+      color: var(--accent-lt);
+      position: absolute;
+      top: -2rem; left: 50%;
+      transform: translateX(-50%);
+      line-height: 1;
+      opacity: 0.4;
+    }
+
+    .testimonial-author {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .author-name {
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--black);
+    }
+
+    .author-role {
+      font-size: 0.72rem;
+      color: var(--gray-500);
+    }
+
+    .author-divider {
+      width: 28px;
+      height: 1px;
+      background: var(--accent);
+      margin: 0.6rem auto;
+    }
+
+    /* Dots */
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.7rem;
+      margin-top: 3rem;
+    }
+
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      border: none;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      transform: scale(1.4);
+    }
+
+    /* Arrows */
+    .slider-arrow {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: none;
+      border: 1px solid var(--gray-300);
+      width: 42px; height: 42px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s;
+      color: var(--gray-700);
+    }
+
+    .slider-arrow:hover {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+
+    .slider-arrow.prev { left: -3rem; }
+    .slider-arrow.next { right: -3rem; }
+
+    @media (max-width: 900px) {
+      .slider-arrow { display: none; }
+    }
+
+    /* =============================================
+       CONTATO
+    ============================================= */
+    #contato {
+      padding: 8rem 5vw;
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .contato-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8vw;
+      align-items: start;
+    }
+
+    .contato-info .section-label { color: var(--accent); }
+    .contato-info .section-label::before { background: var(--accent); }
+
+    .contato-info h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+
+    .contato-info h2 em { font-style: italic; color: var(--accent); }
+
+    .contato-info p {
+      font-size: 0.9rem;
+      color: var(--gray-300);
+      line-height: 1.9;
+      margin-bottom: 2.5rem;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .social-link {
+      width: 42px; height: 42px;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-300);
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    .social-link:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--white);
+    }
+
+    .social-link svg {
+      width: 16px; height: 16px;
+      fill: currentColor;
+    }
+
+    /* Formulário */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group label {
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 0.9rem 1rem;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.3s;
+      resize: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .form-group textarea { height: 130px; }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255,255,255,0.2);
+    }
+
+    .btn-submit {
+      align-self: flex-start;
+      padding: 0.9rem 2.8rem;
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    .btn-submit:hover {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    /* =============================================
+       FOOTER
+    ============================================= */
+    footer {
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 2rem 5vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      color: var(--gray-500);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+    }
+
+    footer .logo-ft {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      color: var(--gray-300);
+    }
+
+    /* =============================================
+       WHATSAPP FLUTUANTE
+    ============================================= */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 900;
+      width: 52px; height: 52px;
+      background: #25D366;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+      transition: transform 0.3s var(--ease), box-shadow 0.3s;
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.12) translateY(-3px);
+      box-shadow: 0 8px 28px rgba(37,211,102,0.45);
+    }
+
+    .whatsapp-float svg {
+      width: 26px; height: 26px;
+      fill: #fff;
+    }
+
+    /* =============================================
+       ANIMAÇÕES
+    ============================================= */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+      50% { opacity: 0.3; transform: scaleY(0.5); transform-origin: top; }
+    }
+
+    /* Reveal on scroll */
+    .reveal {
+      opacity: 0;
+      transform: translateY(36px);
+      transition: opacity 0.75s var(--ease-out), transform 0.75s var(--ease-out);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.12s; }
+    .reveal-delay-2 { transition-delay: 0.24s; }
+    .reveal-delay-3 { transition-delay: 0.36s; }
+
+    /* =============================================
+       RESPONSIVO
+    ============================================= */
+    @media (max-width: 1000px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-item:nth-child(4n+1) { grid-row: span 1; }
+      .gallery-item:nth-child(4n+1) .gallery-item-img { min-height: unset; }
+    }
+
+    @media (max-width: 768px) {
+      :root { --nav-h: 60px; }
+
+      .nav-links { display: none; }
+
+      .hamburger { display: flex; }
+
+      .sobre-inner { grid-template-columns: 1fr; gap: 4rem; }
+      .sobre-img-wrap::after { display: none; }
+
+      .contato-inner { grid-template-columns: 1fr; gap: 4rem; }
+
+      .gallery-grid { grid-template-columns: 1fr; }
+
+      footer { flex-direction: column; text-align: center; }
+    }
+
+    @media (max-width: 480px) {
+      .sobre-stats { gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor Personalizado -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- =============================================
+       NAVBAR
+  ============================================= -->
+  <nav class="navbar" id="navbar">
+    <a href="#inicio" class="nav-logo">Brenda Cardozo</a>
+
+    <ul class="nav-links">
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="#projetos">Projetos</a></li>
+      <li><a href="#testemunhos">Testemunhos</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#inicio" class="mobile-link">Início</a>
+    <a href="#sobre" class="mobile-link">Sobre</a>
+    <a href="#projetos" class="mobile-link">Projetos</a>
+    <a href="#testemunhos" class="mobile-link">Testemunhos</a>
+    <a href="#contato" class="mobile-link">Contato</a>
+  </div>
+
+  <!-- =============================================
+       HERO
+  ============================================= -->
+  <section id="inicio">
+    <div class="hero-img" id="heroImg">
+      <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1800&q=85&auto=format&fit=crop"
+           alt="Fotografia de paisagem — portfólio Brenda Cardozo" />
+    </div>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Fotografia Artística</p>
+      <h1 class="hero-title">Brenda <em>Cardozo</em></h1>
+      <p class="hero-subtitle">Fotografia que conta histórias</p>
+      <div class="hero-cta">
+        <a href="#projetos" class="btn-outline">Ver projetos</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- =============================================
+       SOBRE
+  ============================================= -->
+  <section id="sobre">
+    <div class="sobre-inner">
+
+      <div class="sobre-img-wrap reveal">
+        <img src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=900&q=85&auto=format&fit=crop"
+             alt="Brenda Cardozo, fotógrafa" />
+      </div>
+
+      <div class="sobre-text">
+        <p class="section-label reveal">Sobre mim</p>
+        <h2 class="reveal reveal-delay-1">A arte de <em>capturar</em><br>momentos únicos</h2>
+        <p class="reveal reveal-delay-2">
+          Meu nome é Brenda Cardozo e sou fotógrafa apaixonada por histórias humanas. Nascida e criada rodeada de luz natural e paisagens que roubam o fôlego, aprendi desde cedo que uma imagem pode guardar uma vida inteira dentro dela.
+        </p>
+        <p class="reveal reveal-delay-2">
+          Com mais de oito anos de experiência, meu trabalho transita entre o íntimo e o grandioso — de um olhar suave num retrato a emoção transbordante de um casamento. Cada ensaio é uma jornada de descoberta, onde o real e o belo se encontram sem esforço.
+        </p>
+        <p class="reveal reveal-delay-2">
+          Acredito que a fotografia é escuta. Antes de apertar o obturador, preciso sentir a história que quero contar.
+        </p>
+
+        <div class="sobre-stats reveal reveal-delay-3">
+          <div class="stat-item">
+            <h3>8+</h3>
+            <p>Anos de experiência</p>
+          </div>
+          <div class="stat-item">
+            <h3>420</h3>
+            <p>Sessões realizadas</p>
+          </div>
+          <div class="stat-item">
+            <h3>12</h3>
+            <p>Prêmios recebidos</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       PROJETOS
+  ============================================= -->
+  <section id="projetos">
+    <div class="projetos-header reveal">
+      <p class="section-label">Portfólio</p>
+      <h2>O meu <em>olhar</em><br>sobre o mundo</h2>
+
+      <!-- Filtros -->
+      <div class="filters">
+        <button class="filter-btn active" data-filter="todos">Todos</button>
+        <button class="filter-btn" data-filter="casamentos">Casamentos</button>
+        <button class="filter-btn" data-filter="retratos">Retratos</button>
+        <button class="filter-btn" data-filter="eventos">Eventos</button>
+        <button class="filter-btn" data-filter="lifestyle">Lifestyle</button>
+      </div>
+    </div>
+
+    <!-- Galeria -->
+    <div class="gallery-grid" id="gallery">
+
+      <div class="gallery-item reveal" data-category="casamentos">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=80&auto=format&fit=crop"
+               alt="Casamento — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Casamentos</p>
+            <p class="gallery-title">Amor eterno</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item reveal reveal-delay-1" data-category="retratos">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80&auto=format&fit=crop"
+               alt="Retrato feminino — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Retratos</p>
+            <p class="gallery-title">Luz natural</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item reveal reveal-delay-2" data-category="lifestyle">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80&auto=format&fit=crop"
+               alt="Lifestyle — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Lifestyle</p>
+            <p class="gallery-title">O cotidiano</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="eventos">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80&auto=format&fit=crop"
+               alt="Evento corporativo — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Eventos</p>
+            <p class="gallery-title">Celebração</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item reveal reveal-delay-1" data-category="casamentos">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800&q=80&auto=format&fit=crop"
+               alt="Noivos — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Casamentos</p>
+            <p class="gallery-title">Momento perfeito</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item reveal reveal-delay-2" data-category="retratos">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80&auto=format&fit=crop"
+               alt="Retrato artístico — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Retratos</p>
+            <p class="gallery-title">Identidade</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item reveal" data-category="lifestyle">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&q=80&auto=format&fit=crop"
+               alt="Lifestyle feminino — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Lifestyle</p>
+            <p class="gallery-title">Autenticidade</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item reveal reveal-delay-1" data-category="eventos">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&q=80&auto=format&fit=crop"
+               alt="Evento noturno — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Eventos</p>
+            <p class="gallery-title">Noite especial</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-item reveal reveal-delay-2" data-category="casamentos">
+        <div class="gallery-item-img">
+          <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80&auto=format&fit=crop"
+               alt="Detalhe casamento — Brenda Cardozo Fotografia" />
+        </div>
+        <div class="gallery-overlay">
+          <div class="gallery-info">
+            <p class="gallery-cat">Casamentos</p>
+            <p class="gallery-title">Detalhes que importam</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       TESTEMUNHOS
+  ============================================= -->
+  <section id="testemunhos">
+    <div class="testemunhos-header reveal">
+      <p class="section-label" style="justify-content:center;">Testemunhos</p>
+      <h2>O que dizem <em>sobre mim</em></h2>
+    </div>
+
+    <div class="slider-wrap reveal">
+
+      <button class="slider-arrow prev" id="prevBtn" aria-label="Anterior">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M10 3L5 8l5 5"/>
+        </svg>
+      </button>
+
+      <div class="slider-track" id="sliderTrack">
+
+        <div class="testimonial">
+          <p class="testimonial-quote">
+            Brenda capturou cada detalhe do nosso casamento com uma sensibilidade única. As fotos parecem pinturas — cada imagem conta uma parte da nossa história de amor de forma que nenhuma palavra conseguiria descrever.
+          </p>
+          <div class="testimonial-author">
+            <div class="author-divider"></div>
+            <span class="author-name">Ana & Felipe</span>
+            <span class="author-role">Casamento — São Paulo, 2023</span>
+          </div>
+        </div>
+
+        <div class="testimonial">
+          <p class="testimonial-quote">
+            Nunca me senti tão à vontade na frente de uma câmera. Brenda tem um dom de fazer as pessoas se sentirem naturais, bonitas e presentes. O resultado foi além de tudo que eu imaginava para o meu ensaio.
+          </p>
+          <div class="testimonial-author">
+            <div class="author-divider"></div>
+            <span class="author-name">Isabela Martins</span>
+            <span class="author-role">Ensaio de retratos — Rio de Janeiro, 2024</span>
+          </div>
+        </div>
+
+        <div class="testimonial">
+          <p class="testimonial-quote">
+            Contratamos Brenda para fotografar nosso evento corporativo e a qualidade foi impressionante. Ela foi discreta, profissional e entregou fotos que refletiram perfeitamente a essência da nossa marca.
+          </p>
+          <div class="testimonial-author">
+            <div class="author-divider"></div>
+            <span class="author-name">Lucas Prado</span>
+            <span class="author-role">Diretor de Marketing — Belo Horizonte, 2024</span>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="slider-arrow next" id="nextBtn" aria-label="Próximo">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M6 3l5 5-5 5"/>
+        </svg>
+      </button>
+
+      <div class="slider-dots">
+        <button class="dot active" data-index="0" aria-label="Testemunho 1"></button>
+        <button class="dot" data-index="1" aria-label="Testemunho 2"></button>
+        <button class="dot" data-index="2" aria-label="Testemunho 3"></button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       CONTATO
+  ============================================= -->
+  <section id="contato">
+    <div class="contato-inner">
+
+      <div class="contato-info reveal">
+        <p class="section-label">Contato</p>
+        <h2>Vamos criar algo <em>bonito</em> juntos</h2>
+        <p>
+          Pronta para transformar os seus momentos em arte. Entre em contato e vamos conversar sobre o seu projeto. Respondo em até 24 horas.
+        </p>
+
+        <div class="social-links">
+          <!-- Instagram -->
+          <a href="#" class="social-link" aria-label="Instagram de Brenda Cardozo">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <!-- Facebook -->
+          <a href="#" class="social-link" aria-label="Facebook de Brenda Cardozo">
+            <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <!-- WhatsApp -->
+          <a href="#" class="social-link" aria-label="WhatsApp de Brenda Cardozo">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Formulário -->
+      <form class="contact-form reveal reveal-delay-1" id="contactForm" novalidate>
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" placeholder="O seu nome completo" required />
+        </div>
+        <div class="form-group">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" required />
+        </div>
+        <div class="form-group">
+          <label for="mensagem">Mensagem</label>
+          <textarea id="mensagem" name="mensagem" placeholder="Conte-me sobre o seu projeto..." required></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Enviar mensagem</button>
+      </form>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <span class="logo-ft">Brenda Cardozo</span>
+    <span>© 2025 — Todos os direitos reservados</span>
+    <span>Feito com amor e luz natural</span>
+  </footer>
+
+  <!-- WhatsApp Flutuante -->
+  <a href="#" class="whatsapp-float" aria-label="Falar no WhatsApp">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- =============================================
+       JAVASCRIPT
+  ============================================= -->
+  <script>
+    /* ------------------------------------------
+       CURSOR PERSONALIZADO
+    ------------------------------------------ */
+    const cursor     = document.getElementById('cursor');
+    const cursorRing = document.getElementById('cursorRing');
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top  = mouseY + 'px';
+    });
+
+    // Anel segue com atraso suave
+    (function animateRing() {
+      ringX += (mouseX - ringX) * 0.14;
+      ringY += (mouseY - ringY) * 0.14;
+      cursorRing.style.left = ringX + 'px';
+      cursorRing.style.top  = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    })();
+
+    // Ampliar anel ao hover em links/botões
+    document.querySelectorAll('a, button, .gallery-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursorRing.style.width  = '60px';
+        cursorRing.style.height = '60px';
+        cursor.style.opacity    = '0';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursorRing.style.width  = '36px';
+        cursorRing.style.height = '36px';
+        cursor.style.opacity    = '1';
+      });
+    });
+
+    /* ------------------------------------------
+       NAVBAR — scroll state
+    ------------------------------------------ */
+    const navbar = document.getElementById('navbar');
+
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    /* ------------------------------------------
+       HAMBURGER MENU
+    ------------------------------------------ */
+    const hamburger  = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('open', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    // Fechar ao clicar em link
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamburger.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+
+    /* ------------------------------------------
+       HERO IMAGE — Ken Burns
+    ------------------------------------------ */
+    const heroImg = document.getElementById('heroImg');
+    heroImg.querySelector('img').addEventListener('load', () => {
+      heroImg.classList.add('loaded');
+    });
+    // Disparar caso já esteja em cache
+    if (heroImg.querySelector('img').complete) {
+      heroImg.classList.add('loaded');
+    }
+
+    /* ------------------------------------------
+       FILTROS DA GALERIA
+    ------------------------------------------ */
+    const filterBtns  = document.querySelectorAll('.filter-btn');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Atualizar botão ativo
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+
+        galleryItems.forEach((item, i) => {
+          const match = filter === 'todos' || item.dataset.category === filter;
+
+          if (match) {
+            item.classList.remove('hidden');
+            item.style.transitionDelay = (i * 0.04) + 's';
+          } else {
+            item.classList.add('hidden');
+            item.style.transitionDelay = '0s';
+          }
+        });
+      });
+    });
+
+    /* ------------------------------------------
+       SLIDER TESTEMUNHOS
+    ------------------------------------------ */
+    const track    = document.getElementById('sliderTrack');
+    const dots     = document.querySelectorAll('.dot');
+    const prevBtn  = document.getElementById('prevBtn');
+    const nextBtn  = document.getElementById('nextBtn');
+    let current    = 0;
+    const total    = document.querySelectorAll('.testimonial').length;
+    let autoTimer;
+
+    function goTo(idx) {
+      current = (idx + total) % total;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    }
+
+    prevBtn.addEventListener('click', () => { goTo(current - 1); resetAuto(); });
+    nextBtn.addEventListener('click', () => { goTo(current + 1); resetAuto(); });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => { goTo(+dot.dataset.index); resetAuto(); });
+    });
+
+    function resetAuto() {
+      clearInterval(autoTimer);
+      autoTimer = setInterval(() => goTo(current + 1), 5500);
+    }
+
+    resetAuto();
+
+    // Swipe touch
+    let touchStartX = 0;
+    track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) { goTo(diff > 0 ? current + 1 : current - 1); resetAuto(); }
+    });
+
+    /* ------------------------------------------
+       SCROLL REVEAL
+    ------------------------------------------ */
+    const revealEls = document.querySelectorAll('.reveal');
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    revealEls.forEach(el => revealObserver.observe(el));
+
+    /* ------------------------------------------
+       FORMULÁRIO — feedback visual
+    ------------------------------------------ */
+    const form = document.getElementById('contactForm');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const btn = form.querySelector('.btn-submit');
+      const original = btn.textContent;
+
+      btn.textContent = 'Enviado ✓';
+      btn.style.background = '#4caf50';
+      btn.style.borderColor = '#4caf50';
+
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        form.reset();
+      }, 3000);
+    });
+  </script>
+
+</body>
+</html>

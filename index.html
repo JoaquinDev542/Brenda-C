@@ -320,27 +320,34 @@
     /* Gallery item base */
     .gallery-item {
       position: relative; overflow: hidden; cursor: pointer;
-      transition: opacity .45s var(--ease), transform .45s var(--ease);
+      transition: opacity .4s var(--ease), transform .4s var(--ease);
+      opacity: 1; transform: scale(1);
     }
 
-    /* Hidden state for filter */
+    /* Hidden state for filter — keeps grid flow intact via display:none after transition */
     .gallery-item.hidden {
       opacity: 0;
       pointer-events: none;
       transform: scale(.96);
-      position: absolute;
-      pointer-events: none;
-      visibility: hidden;
+      /* display:none set by JS after fade out */
+    }
+    .gallery-item.gone {
+      display: none;
     }
 
-    /* Appear animation for new items */
+    /* Appear animation for new items loaded via "ver mais" */
     @keyframes itemAppear {
-      from { opacity: 0; transform: translateY(18px) scale(.97); }
+      from { opacity: 0; transform: translateY(20px) scale(.97); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .gallery-item.appearing {
       animation: itemAppear .55s var(--ease-out) both;
+    }
+
+    /* Grid fade wrapper — dims the whole grid during filter transition */
+    .gallery-grid.filtering {
+      pointer-events: none;
     }
 
     /* Layout masonry leve */
@@ -918,22 +925,49 @@
       const counter    = document.getElementById('galleryCounter');
       const emptyEl    = document.getElementById('galleryEmpty');
 
-      let activeFilter  = 'todos';
-      let loadedCount   = 0;   // quantos itens já foram inseridos no DOM
-      const MAX_TOTAL   = Math.min(ALL_IMAGES.length, MAX_IMAGES);
+      const MAX_TOTAL        = Math.min(ALL_IMAGES.length, MAX_IMAGES);
+      const MIN_PER_CATEGORY = 4;  // mínimo de itens visíveis por categoria ao filtrar
+      const FADE_DURATION    = 350; // ms para a transição de filtro
+
+      let activeFilter = 'todos';
+      // Set de srcs já inseridos no DOM (sem query string)
+      const inDomSrcs  = new Set();
 
       /* ---- Helpers ---- */
-      function getFiltered() {
-        const pool = ALL_IMAGES.slice(0, MAX_TOTAL);
-        return activeFilter === 'todos'
-          ? pool
-          : pool.filter(img => img.category === activeFilter);
+      function baseSrc(src) { return src.split('?')[0]; }
+
+      function getPool() { return ALL_IMAGES.slice(0, MAX_TOTAL); }
+
+      function getFiltered(filter) {
+        const f = filter !== undefined ? filter : activeFilter;
+        return f === 'todos' ? getPool() : getPool().filter(img => img.category === f);
       }
 
-      function createItem(imgData, animate = false) {
+      function capitalize(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
+
+      function updateCounter(visible, total) {
+        counter.textContent = `Exibindo ${visible} de ${total} projetos`;
+        counter.classList.toggle('hidden-el', total === 0);
+      }
+
+      function updateButton(visibleCount, totalFiltered) {
+        const remaining = totalFiltered - visibleCount;
+        if (remaining <= 0) {
+          btnVerMais.disabled = true;
+          btnVerMais.querySelector('.btn-label').textContent = 'Não há mais projetos';
+          btnVerMais.querySelector('.btn-icon-plus').style.display = 'none';
+        } else {
+          btnVerMais.disabled = false;
+          btnVerMais.querySelector('.btn-label').textContent = 'Ver mais projetos';
+          btnVerMais.querySelector('.btn-icon-plus').style.display = '';
+        }
+      }
+
+      function createItem(imgData, animate) {
         const item = document.createElement('div');
         item.className = 'gallery-item' + (animate ? ' appearing' : '');
         item.dataset.category = imgData.category;
+        item.dataset.src = baseSrc(imgData.src);
 
         item.innerHTML = `
           <div class="gallery-item-img">
@@ -946,7 +980,6 @@
             </div>
           </div>`;
 
-        // Cursor hover
         item.addEventListener('mouseenter', () => {
           cursorRing.style.width = cursorRing.style.height = '60px';
           cursor.style.opacity = '0';
@@ -956,133 +989,140 @@
           cursor.style.opacity = '1';
         });
 
+        inDomSrcs.add(baseSrc(imgData.src));
         return item;
       }
 
-      function capitalize(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
+      /* ---- Insert new items into the DOM ---- */
+      function insertItems(images, animate) {
+        images.forEach((imgData, i) => {
+          if (inDomSrcs.has(baseSrc(imgData.src))) return;
+          const item = createItem(imgData, animate);
+          if (animate) item.style.animationDelay = (i * 70) + 'ms';
+          grid.appendChild(item);
+          revealObserver.observe(item);
+        });
       }
 
-      function updateCounter(visible, total) {
-        counter.textContent = `Exibindo ${visible} de ${total} projetos`;
-        counter.classList.toggle('hidden-el', total === 0);
-      }
+      /* ---- Ensure minimum items in DOM for a given filter ---- */
+      function ensureMinimumForFilter(filter) {
+        const filtered = getFiltered(filter);
+        const alreadyInDom = filtered.filter(img => inDomSrcs.has(baseSrc(img.src)));
+        const missing = filtered.filter(img => !inDomSrcs.has(baseSrc(img.src)));
 
-      function updateButton(visibleCount, totalFiltered) {
-        const remaining = totalFiltered - visibleCount;
-
-        if (remaining <= 0) {
-          btnVerMais.disabled = true;
-          btnVerMais.querySelector('.btn-label').textContent = 'Não há mais projetos';
-          btnVerMais.querySelector('.btn-icon-plus').style.display = 'none';
-        } else {
-          btnVerMais.disabled = false;
-          btnVerMais.querySelector('.btn-label').textContent = 'Ver mais projetos';
-          btnVerMais.querySelector('.btn-icon-plus').style.display = '';
+        if (alreadyInDom.length < MIN_PER_CATEGORY && missing.length > 0) {
+          const needed = Math.min(MIN_PER_CATEGORY - alreadyInDom.length, missing.length);
+          insertItems(missing.slice(0, needed), false);
         }
       }
 
-      /* ---- Filter: show/hide existing items without re-render ---- */
+      /* ---- Apply filter with smooth fade transition ---- */
       function applyFilter(filter) {
         activeFilter = filter;
-        const items    = grid.querySelectorAll('.gallery-item');
-        let   visible  = 0;
-        const filtered = getFiltered();
-        const ids      = new Set(filtered.map((_, i) => i)); // indices in filtered array
 
-        // Show or hide existing DOM items
+        // Ensure there are items in DOM for this filter before showing
+        ensureMinimumForFilter(filter);
+
+        const items = [...grid.querySelectorAll('.gallery-item')];
+        grid.classList.add('filtering');
+
+        // Step 1: fade out items that don't match
         items.forEach(item => {
           const matches = filter === 'todos' || item.dataset.category === filter;
-          if (matches) {
-            item.classList.remove('hidden');
-            visible++;
-          } else {
+          if (!matches) {
+            item.classList.remove('gone');
             item.classList.add('hidden');
           }
         });
 
-        // How many of the filtered set are already in DOM?
-        const alreadyLoaded = visible;
-        const totalFiltered = filtered.length;
+        // Step 2: after fade-out, set display:none on hidden items; fade in matching
+        setTimeout(() => {
+          items.forEach(item => {
+            const matches = filter === 'todos' || item.dataset.category === filter;
+            if (!matches) {
+              item.classList.add('gone');
+            } else {
+              item.classList.remove('hidden', 'gone');
+            }
+          });
 
-        emptyEl.classList.toggle('visible', totalFiltered === 0);
-        updateCounter(alreadyLoaded, totalFiltered);
-        updateButton(alreadyLoaded, totalFiltered);
+          grid.classList.remove('filtering');
+
+          const visible = grid.querySelectorAll('.gallery-item:not(.hidden):not(.gone)').length;
+          const total   = getFiltered(filter).length;
+          emptyEl.classList.toggle('visible', total === 0);
+          updateCounter(visible, total);
+          updateButton(visible, total);
+        }, FADE_DURATION);
       }
 
       /* ---- Load more ---- */
       function loadMore() {
-        const filtered   = getFiltered();
-        // Items already in DOM for this filter
-        const inDom      = grid.querySelectorAll('.gallery-item:not(.hidden)').length;
-        const totalInDom = grid.querySelectorAll('.gallery-item').length;
-
-        // Slice of filtered array that hasn't been added yet
-        // We need to know which filtered items are already in the DOM
-        // Strategy: track by dataset index
-        const alreadyInDomSrcs = new Set(
-          [...grid.querySelectorAll('.gallery-item')].map(el =>
-            el.querySelector('img').src.split('?')[0]
-          )
-        );
-
-        const remaining = filtered.filter(img => {
-          const baseSrc = img.src.split('?')[0];
-          return !alreadyInDomSrcs.has(baseSrc);
-        });
+        // All images that match current filter and are not yet in DOM
+        const filtered  = getFiltered();
+        const remaining = filtered.filter(img => !inDomSrcs.has(baseSrc(img.src)));
 
         if (remaining.length === 0) {
-          updateButton(inDom, filtered.length);
+          const visible = grid.querySelectorAll('.gallery-item:not(.hidden):not(.gone)').length;
+          updateButton(visible, filtered.length);
           return;
         }
 
-        // Loading state
         btnVerMais.classList.add('loading');
         btnVerMais.disabled = true;
 
         setTimeout(() => {
           const batch = remaining.slice(0, BATCH_SIZE);
 
+          // We may need to also insert items from other categories to keep them in DOM
+          // but we just insert batch items — they all match the filter
           batch.forEach((imgData, i) => {
+            if (inDomSrcs.has(baseSrc(imgData.src))) return;
             const item = createItem(imgData, true);
-            // Stagger animation
-            item.style.animationDelay = (i * 80) + 'ms';
-
-            // If filter active and doesn't match, hide immediately
+            item.style.animationDelay = (i * 70) + 'ms';
+            // If item doesn't match active filter, mark gone immediately
             if (activeFilter !== 'todos' && imgData.category !== activeFilter) {
-              item.classList.add('hidden');
+              item.classList.add('hidden', 'gone');
             }
-
             grid.appendChild(item);
             revealObserver.observe(item);
           });
 
-          loadedCount += batch.length;
+          const visible = grid.querySelectorAll('.gallery-item:not(.hidden):not(.gone)').length;
+          const total   = filtered.length;
 
-          // Re-count visible
-          const newVisible = grid.querySelectorAll('.gallery-item:not(.hidden)').length;
-          const newTotal   = filtered.length;
-
-          updateCounter(newVisible, newTotal);
-          updateButton(newVisible, newTotal);
-
+          updateCounter(visible, total);
+          updateButton(visible, total);
           btnVerMais.classList.remove('loading');
-        }, 400); // slight delay for UX
+        }, 400);
       }
 
-      /* ---- Initial render ---- */
+      /* ---- Initial render: load INITIAL_LOAD items spread across all categories ---- */
       function init() {
-        const initial = ALL_IMAGES.slice(0, Math.min(INITIAL_LOAD, MAX_TOTAL));
+        // Garantir ao menos MIN_PER_CATEGORY itens de cada categoria desde o início
+        const categories = ['casamentos', 'retratos', 'eventos', 'lifestyle'];
+        const preloaded  = new Set();
 
-        initial.forEach(imgData => {
-          const item = createItem(imgData, false);
-          grid.appendChild(item);
-          revealObserver.observe(item);
+        categories.forEach(cat => {
+          const catImages = getPool().filter(img => img.category === cat);
+          catImages.slice(0, MIN_PER_CATEGORY).forEach(img => preloaded.add(img));
         });
 
-        loadedCount = initial.length;
-        updateCounter(initial.length, ALL_IMAGES.slice(0, MAX_TOTAL).length);
-        updateButton(initial.length, ALL_IMAGES.slice(0, MAX_TOTAL).length);
+        // Fill remaining slots with the first images from the pool (todos)
+        let extras = 0;
+        const target = Math.max(INITIAL_LOAD, MIN_PER_CATEGORY * categories.length);
+        getPool().forEach(img => {
+          if (preloaded.size >= target) return;
+          preloaded.add(img);
+        });
+
+        // Insert in original pool order to preserve visual layout
+        const ordered = getPool().filter(img => preloaded.has(img));
+        insertItems(ordered, false);
+
+        const total = getPool().length;
+        updateCounter(ordered.length, total);
+        updateButton(ordered.length, total);
       }
 
       /* ---- Public API ---- */

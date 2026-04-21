@@ -140,7 +140,6 @@
       position: relative; height: 100svh; min-height: 600px; overflow: hidden;
     }
 
-    /* Stack de slides */
     .hero-slides { position: absolute; inset: 0; }
 
     .hero-slide {
@@ -152,7 +151,6 @@
     .hero-slide.leaving { opacity: 0; transform: scale(1); transition: opacity 1.5s ease-in-out; }
     .hero-slide img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Indicadores (traços) */
     .hero-indicators {
       position: absolute; bottom: 2.8rem; right: 5vw; z-index: 3;
       display: flex; gap: .5rem; align-items: center;
@@ -165,7 +163,6 @@
     }
     .hero-indicator.active { width: 42px; background: var(--accent); }
 
-    /* Barra de progresso */
     .hero-progress {
       position: absolute; bottom: 0; left: 0;
       height: 2px; width: 0%;
@@ -320,24 +317,30 @@
       display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem;
     }
 
+    /* Gallery item base */
     .gallery-item {
       position: relative; overflow: hidden; cursor: pointer;
       transition: opacity .45s var(--ease), transform .45s var(--ease);
     }
+
+    /* Hidden state for filter */
     .gallery-item.hidden {
-      opacity: 0; pointer-events: none; transform: scale(.96);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(.96);
+      position: absolute;
+      pointer-events: none;
+      visibility: hidden;
     }
 
-    /* Itens extras — ocultos até "Ver mais" */
-    .gallery-item.extra { display: none; }
-    .gallery-item.extra.showing {
-      display: block;
-      animation: itemAppear .55s var(--ease-out) both;
-    }
-
+    /* Appear animation for new items */
     @keyframes itemAppear {
       from { opacity: 0; transform: translateY(18px) scale(.97); }
       to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .gallery-item.appearing {
+      animation: itemAppear .55s var(--ease-out) both;
     }
 
     /* Layout masonry leve */
@@ -371,8 +374,19 @@
     /* Botão Ver mais */
     .gallery-footer {
       max-width: 1200px; margin: 3rem auto 0;
-      display: flex; justify-content: center;
+      display: flex; justify-content: center; flex-direction: column;
+      align-items: center; gap: 1rem;
     }
+
+    /* Counter label */
+    .gallery-counter {
+      font-family: var(--font-sans); font-size: .65rem;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gray-500);
+      transition: opacity .3s;
+    }
+    .gallery-counter.hidden-el { opacity: 0; pointer-events: none; }
+
     .btn-ver-mais {
       display: flex; align-items: center; gap: .8rem;
       padding: .9rem 2.4rem;
@@ -380,18 +394,51 @@
       font-family: var(--font-sans); font-size: .7rem;
       letter-spacing: .2em; text-transform: uppercase;
       color: var(--gray-700); cursor: pointer;
-      transition: background .35s var(--ease), border-color .35s, color .35s, opacity .4s, transform .3s;
+      transition: background .35s var(--ease), border-color .35s, color .35s, opacity .4s var(--ease), transform .3s var(--ease);
     }
-    .btn-ver-mais:hover { background: var(--black); border-color: var(--black); color: var(--white); }
-    .btn-ver-mais.hidden-btn { opacity: 0; pointer-events: none; transform: translateY(6px); }
+    .btn-ver-mais:hover:not(:disabled) { background: var(--black); border-color: var(--black); color: var(--white); }
+    .btn-ver-mais:disabled {
+      opacity: .45; cursor: default;
+      border-color: var(--gray-300); color: var(--gray-500);
+    }
+    .btn-ver-mais.hidden-btn {
+      opacity: 0; pointer-events: none; transform: translateY(6px);
+    }
 
     .btn-icon-plus {
       width: 18px; height: 18px; border: 1px solid currentColor;
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; transition: transform .4s var(--ease);
     }
-    .btn-ver-mais:hover .btn-icon-plus { transform: rotate(90deg); }
+    .btn-ver-mais:hover:not(:disabled) .btn-icon-plus { transform: rotate(90deg); }
     .btn-icon-plus svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+    /* Loading spinner */
+    .btn-spinner {
+      width: 14px; height: 14px;
+      border: 1px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: none;
+    }
+    .btn-ver-mais.loading .btn-spinner { display: block; }
+    .btn-ver-mais.loading .btn-icon-plus { display: none; }
+    .btn-ver-mais.loading .btn-label::after { content: '...'; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Empty state */
+    .gallery-empty {
+      max-width: 1200px; margin: 2rem auto 0;
+      text-align: center; padding: 3rem;
+      display: none;
+    }
+    .gallery-empty.visible { display: block; }
+    .gallery-empty p {
+      font-family: var(--font-serif); font-size: 1.4rem; font-style: italic;
+      color: var(--gray-500); font-weight: 300;
+    }
 
     /* =============================================
        TESTEMUNHOS
@@ -601,27 +648,21 @@
 
   <!-- HERO SLIDESHOW -->
   <section id="inicio">
-
     <div class="hero-slides" id="heroSlides">
       <div class="hero-slide active">
-        <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1800&q=85&auto=format&fit=crop"
-             alt="Fotografia de paisagem — Brenda Cardozo" />
+        <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1800&q=85&auto=format&fit=crop" alt="Fotografia de paisagem — Brenda Cardozo" />
       </div>
       <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=1800&q=85&auto=format&fit=crop"
-             alt="Casamento — Brenda Cardozo Fotografia" />
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=1800&q=85&auto=format&fit=crop" alt="Casamento — Brenda Cardozo Fotografia" />
       </div>
       <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1800&q=85&auto=format&fit=crop"
-             alt="Retrato feminino — Brenda Cardozo Fotografia" />
+        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1800&q=85&auto=format&fit=crop" alt="Retrato feminino — Brenda Cardozo Fotografia" />
       </div>
       <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1800&q=85&auto=format&fit=crop"
-             alt="Lifestyle — Brenda Cardozo Fotografia" />
+        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1800&q=85&auto=format&fit=crop" alt="Lifestyle — Brenda Cardozo Fotografia" />
       </div>
       <div class="hero-slide">
-        <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1800&q=85&auto=format&fit=crop"
-             alt="Evento — Brenda Cardozo Fotografia" />
+        <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1800&q=85&auto=format&fit=crop" alt="Evento — Brenda Cardozo Fotografia" />
       </div>
     </div>
 
@@ -643,18 +684,14 @@
       <div class="scroll-line"></div>
       <span>Scroll</span>
     </div>
-
   </section>
 
   <!-- SOBRE -->
   <section id="sobre">
     <div class="sobre-inner">
-
       <div class="sobre-img-wrap reveal">
-        <img src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=900&q=85&auto=format&fit=crop"
-             alt="Brenda Cardozo, fotógrafa" />
+        <img src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=900&q=85&auto=format&fit=crop" alt="Brenda Cardozo, fotógrafa" />
       </div>
-
       <div class="sobre-text">
         <p class="section-label reveal">Sobre mim</p>
         <h2 class="reveal reveal-delay-1">A arte de <em>capturar</em><br>momentos únicos</h2>
@@ -673,7 +710,6 @@
           <div class="stat-item"><h3>12</h3><p>Prêmios recebidos</p></div>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -691,149 +727,14 @@
       </div>
     </div>
 
-    <div class="gallery-grid" id="gallery">
+    <div class="gallery-grid" id="gallery"></div>
 
-      <!-- Bloco inicial -->
-      <div class="gallery-item reveal" data-category="casamentos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=80&auto=format&fit=crop" alt="Casamento — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Casamentos</p><p class="gallery-title">Amor eterno</p>
-        </div></div>
-      </div>
+    <div class="gallery-empty" id="galleryEmpty">
+      <p>Nenhum projeto encontrado nesta categoria.</p>
+    </div>
 
-      <div class="gallery-item reveal reveal-delay-1" data-category="retratos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80&auto=format&fit=crop" alt="Retrato — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Retratos</p><p class="gallery-title">Luz natural</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item reveal reveal-delay-2" data-category="lifestyle">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80&auto=format&fit=crop" alt="Lifestyle — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Lifestyle</p><p class="gallery-title">O cotidiano</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item reveal" data-category="eventos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80&auto=format&fit=crop" alt="Evento — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Eventos</p><p class="gallery-title">Celebração</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item reveal reveal-delay-1" data-category="casamentos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800&q=80&auto=format&fit=crop" alt="Noivos — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Casamentos</p><p class="gallery-title">Momento perfeito</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item reveal reveal-delay-2" data-category="retratos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80&auto=format&fit=crop" alt="Retrato artístico — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Retratos</p><p class="gallery-title">Identidade</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item reveal" data-category="lifestyle">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&q=80&auto=format&fit=crop" alt="Lifestyle — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Lifestyle</p><p class="gallery-title">Autenticidade</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item reveal reveal-delay-1" data-category="eventos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&q=80&auto=format&fit=crop" alt="Evento noturno — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Eventos</p><p class="gallery-title">Noite especial</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item reveal reveal-delay-2" data-category="casamentos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80&auto=format&fit=crop" alt="Detalhe casamento — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Casamentos</p><p class="gallery-title">Detalhes que importam</p>
-        </div></div>
-      </div>
-
-      <!-- Bloco extra (hidden até "Ver mais") -->
-      <div class="gallery-item extra" data-category="retratos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop" alt="Retrato — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Retratos</p><p class="gallery-title">Olhar íntimo</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item extra" data-category="lifestyle">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1504703395950-b89145a5425b?w=800&q=80&auto=format&fit=crop" alt="Lifestyle — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Lifestyle</p><p class="gallery-title">Liberdade</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item extra" data-category="casamentos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80&auto=format&fit=crop" alt="Casamento — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Casamentos</p><p class="gallery-title">Promessa eterna</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item extra" data-category="eventos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80&auto=format&fit=crop" alt="Evento — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Eventos</p><p class="gallery-title">Palco de emoções</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item extra" data-category="retratos">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=80&auto=format&fit=crop" alt="Retrato masculino — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Retratos</p><p class="gallery-title">Presença</p>
-        </div></div>
-      </div>
-
-      <div class="gallery-item extra" data-category="lifestyle">
-        <div class="gallery-item-img">
-          <img src="https://images.unsplash.com/photo-1488161628813-04466f872be2?w=800&q=80&auto=format&fit=crop" alt="Lifestyle urbano — Brenda Cardozo" />
-        </div>
-        <div class="gallery-overlay"><div class="gallery-info">
-          <p class="gallery-cat">Lifestyle</p><p class="gallery-title">Cidade viva</p>
-        </div></div>
-      </div>
-
-    </div><!-- /gallery-grid -->
-
-    <!-- Botão Ver mais -->
     <div class="gallery-footer">
+      <p class="gallery-counter" id="galleryCounter"></p>
       <button class="btn-ver-mais" id="btnVerMais" aria-label="Ver mais projetos">
         <span class="btn-icon-plus">
           <svg viewBox="0 0 10 10">
@@ -841,10 +742,10 @@
             <line x1="1" y1="5" x2="9" y2="5" stroke-linecap="round"/>
           </svg>
         </span>
-        Ver mais projetos
+        <div class="btn-spinner"></div>
+        <span class="btn-label">Ver mais projetos</span>
       </button>
     </div>
-
   </section>
 
   <!-- TESTEMUNHOS -->
@@ -948,9 +849,249 @@
 
   <!-- JAVASCRIPT -->
   <script>
-    /* ------------------------------------------
+    /* ============================================================
+       GALLERY DATA — 50 imagens distribuídas por categoria
+    ============================================================ */
+    const ALL_IMAGES = [
+      // --- CASAMENTOS ---
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=80&auto=format&fit=crop', title: 'Amor eterno', alt: 'Casamento — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800&q=80&auto=format&fit=crop', title: 'Momento perfeito', alt: 'Noivos — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=800&q=80&auto=format&fit=crop', title: 'Detalhes que importam', alt: 'Detalhe casamento — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80&auto=format&fit=crop', title: 'Promessa eterna', alt: 'Casamento — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=800&q=80&auto=format&fit=crop', title: 'Primeiro olhar', alt: 'Casamento — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=80&auto=format&fit=crop', title: 'Alegria compartilhada', alt: 'Casamento alegre — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80&auto=format&fit=crop', title: 'União perfeita', alt: 'Noivos — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1520854221256-17451cc331bf?w=800&q=80&auto=format&fit=crop', title: 'Luz de fim de tarde', alt: 'Casamento dourado — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1583939411023-14783179e581?w=800&q=80&auto=format&fit=crop', title: 'O grande dia', alt: 'Casamento cerimônia — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1523438885200-e635ba2c371e?w=800&q=80&auto=format&fit=crop', title: 'Flores e amor', alt: 'Bouquet casamento — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1529636798458-92182e662485?w=800&q=80&auto=format&fit=crop', title: 'Emoção pura', alt: 'Casamento emoção — Brenda Cardozo' },
+      { category: 'casamentos', src: 'https://images.unsplash.com/photo-1504673344986-8b9a5a5be49f?w=800&q=80&auto=format&fit=crop', title: 'Noite encantada', alt: 'Casamento noturno — Brenda Cardozo' },
+
+      // --- RETRATOS ---
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80&auto=format&fit=crop', title: 'Luz natural', alt: 'Retrato — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80&auto=format&fit=crop', title: 'Identidade', alt: 'Retrato artístico — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&q=80&auto=format&fit=crop', title: 'Autenticidade', alt: 'Lifestyle — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80&auto=format&fit=crop', title: 'Olhar íntimo', alt: 'Retrato — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=800&q=80&auto=format&fit=crop', title: 'Presença', alt: 'Retrato masculino — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&q=80&auto=format&fit=crop', title: 'Força interior', alt: 'Retrato — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&q=80&auto=format&fit=crop', title: 'Alma revelada', alt: 'Retrato — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&q=80&auto=format&fit=crop', title: 'Mulher e luz', alt: 'Retrato feminino — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1504276048855-f3d60e69632f?w=800&q=80&auto=format&fit=crop', title: 'Reflexão', alt: 'Retrato pensativo — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80&auto=format&fit=crop', title: 'Caráter', alt: 'Retrato masculino — Brenda Cardozo' },
+      { category: 'retratos', src: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?w=800&q=80&auto=format&fit=crop', title: 'Essência', alt: 'Retrato — Brenda Cardozo' },
+
+      // --- EVENTOS ---
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&q=80&auto=format&fit=crop', title: 'Celebração', alt: 'Evento — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&q=80&auto=format&fit=crop', title: 'Noite especial', alt: 'Evento noturno — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80&auto=format&fit=crop', title: 'Palco de emoções', alt: 'Evento — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800&q=80&auto=format&fit=crop', title: 'Conferência', alt: 'Evento corporativo — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?w=800&q=80&auto=format&fit=crop', title: 'Festival de música', alt: 'Evento musical — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&q=80&auto=format&fit=crop', title: 'Multidão vibrante', alt: 'Evento multidão — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80&auto=format&fit=crop', title: 'Luz de palco', alt: 'Evento show — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&q=80&auto=format&fit=crop', title: 'Arte ao vivo', alt: 'Evento arte — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1481437156560-3205f6a55735?w=800&q=80&auto=format&fit=crop', title: 'Encontro especial', alt: 'Evento social — Brenda Cardozo' },
+      { category: 'eventos', src: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=800&q=80&auto=format&fit=crop', title: 'Momentos coletivos', alt: 'Evento grupo — Brenda Cardozo' },
+
+      // --- LIFESTYLE ---
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1488161628813-04466f872be2?w=800&q=80&auto=format&fit=crop', title: 'Cidade viva', alt: 'Lifestyle urbano — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1504703395950-b89145a5425b?w=800&q=80&auto=format&fit=crop', title: 'Liberdade', alt: 'Lifestyle — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80&auto=format&fit=crop', title: 'Horizonte aberto', alt: 'Lifestyle natureza — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1475503572774-15a45e5d60b9?w=800&q=80&auto=format&fit=crop', title: 'Instante dourado', alt: 'Lifestyle por do sol — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1502323777036-f29e3972d82f?w=800&q=80&auto=format&fit=crop', title: 'Devaneio', alt: 'Lifestyle — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=800&q=80&auto=format&fit=crop', title: 'Viagem e descoberta', alt: 'Lifestyle viagem — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80&auto=format&fit=crop', title: 'Mar e alma', alt: 'Lifestyle praia — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&q=80&auto=format&fit=crop', title: 'Trilha da vida', alt: 'Lifestyle trilha — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1445307806294-bff7f67ff225?w=800&q=80&auto=format&fit=crop', title: 'Frescor matinal', alt: 'Lifestyle manhã — Brenda Cardozo' },
+      { category: 'lifestyle', src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80&auto=format&fit=crop', title: 'Sabores do dia', alt: 'Lifestyle comida — Brenda Cardozo' },
+    ];
+
+    const MAX_IMAGES   = 50;
+    const BATCH_SIZE   = 6;  // itens por clique em "ver mais"
+    const INITIAL_LOAD = 9;  // itens visíveis ao carregar
+
+    /* ============================================================
+       GALLERY MANAGER
+    ============================================================ */
+    const GalleryManager = (() => {
+      const grid       = document.getElementById('gallery');
+      const btnVerMais = document.getElementById('btnVerMais');
+      const counter    = document.getElementById('galleryCounter');
+      const emptyEl    = document.getElementById('galleryEmpty');
+
+      let activeFilter  = 'todos';
+      let loadedCount   = 0;   // quantos itens já foram inseridos no DOM
+      const MAX_TOTAL   = Math.min(ALL_IMAGES.length, MAX_IMAGES);
+
+      /* ---- Helpers ---- */
+      function getFiltered() {
+        const pool = ALL_IMAGES.slice(0, MAX_TOTAL);
+        return activeFilter === 'todos'
+          ? pool
+          : pool.filter(img => img.category === activeFilter);
+      }
+
+      function createItem(imgData, animate = false) {
+        const item = document.createElement('div');
+        item.className = 'gallery-item' + (animate ? ' appearing' : '');
+        item.dataset.category = imgData.category;
+
+        item.innerHTML = `
+          <div class="gallery-item-img">
+            <img src="${imgData.src}" alt="${imgData.alt}" loading="lazy" />
+          </div>
+          <div class="gallery-overlay">
+            <div class="gallery-info">
+              <p class="gallery-cat">${capitalize(imgData.category)}</p>
+              <p class="gallery-title">${imgData.title}</p>
+            </div>
+          </div>`;
+
+        // Cursor hover
+        item.addEventListener('mouseenter', () => {
+          cursorRing.style.width = cursorRing.style.height = '60px';
+          cursor.style.opacity = '0';
+        });
+        item.addEventListener('mouseleave', () => {
+          cursorRing.style.width = cursorRing.style.height = '36px';
+          cursor.style.opacity = '1';
+        });
+
+        return item;
+      }
+
+      function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      }
+
+      function updateCounter(visible, total) {
+        counter.textContent = `Exibindo ${visible} de ${total} projetos`;
+        counter.classList.toggle('hidden-el', total === 0);
+      }
+
+      function updateButton(visibleCount, totalFiltered) {
+        const remaining = totalFiltered - visibleCount;
+
+        if (remaining <= 0) {
+          btnVerMais.disabled = true;
+          btnVerMais.querySelector('.btn-label').textContent = 'Não há mais projetos';
+          btnVerMais.querySelector('.btn-icon-plus').style.display = 'none';
+        } else {
+          btnVerMais.disabled = false;
+          btnVerMais.querySelector('.btn-label').textContent = 'Ver mais projetos';
+          btnVerMais.querySelector('.btn-icon-plus').style.display = '';
+        }
+      }
+
+      /* ---- Filter: show/hide existing items without re-render ---- */
+      function applyFilter(filter) {
+        activeFilter = filter;
+        const items    = grid.querySelectorAll('.gallery-item');
+        let   visible  = 0;
+        const filtered = getFiltered();
+        const ids      = new Set(filtered.map((_, i) => i)); // indices in filtered array
+
+        // Show or hide existing DOM items
+        items.forEach(item => {
+          const matches = filter === 'todos' || item.dataset.category === filter;
+          if (matches) {
+            item.classList.remove('hidden');
+            visible++;
+          } else {
+            item.classList.add('hidden');
+          }
+        });
+
+        // How many of the filtered set are already in DOM?
+        const alreadyLoaded = visible;
+        const totalFiltered = filtered.length;
+
+        emptyEl.classList.toggle('visible', totalFiltered === 0);
+        updateCounter(alreadyLoaded, totalFiltered);
+        updateButton(alreadyLoaded, totalFiltered);
+      }
+
+      /* ---- Load more ---- */
+      function loadMore() {
+        const filtered   = getFiltered();
+        // Items already in DOM for this filter
+        const inDom      = grid.querySelectorAll('.gallery-item:not(.hidden)').length;
+        const totalInDom = grid.querySelectorAll('.gallery-item').length;
+
+        // Slice of filtered array that hasn't been added yet
+        // We need to know which filtered items are already in the DOM
+        // Strategy: track by dataset index
+        const alreadyInDomSrcs = new Set(
+          [...grid.querySelectorAll('.gallery-item')].map(el =>
+            el.querySelector('img').src.split('?')[0]
+          )
+        );
+
+        const remaining = filtered.filter(img => {
+          const baseSrc = img.src.split('?')[0];
+          return !alreadyInDomSrcs.has(baseSrc);
+        });
+
+        if (remaining.length === 0) {
+          updateButton(inDom, filtered.length);
+          return;
+        }
+
+        // Loading state
+        btnVerMais.classList.add('loading');
+        btnVerMais.disabled = true;
+
+        setTimeout(() => {
+          const batch = remaining.slice(0, BATCH_SIZE);
+
+          batch.forEach((imgData, i) => {
+            const item = createItem(imgData, true);
+            // Stagger animation
+            item.style.animationDelay = (i * 80) + 'ms';
+
+            // If filter active and doesn't match, hide immediately
+            if (activeFilter !== 'todos' && imgData.category !== activeFilter) {
+              item.classList.add('hidden');
+            }
+
+            grid.appendChild(item);
+            revealObserver.observe(item);
+          });
+
+          loadedCount += batch.length;
+
+          // Re-count visible
+          const newVisible = grid.querySelectorAll('.gallery-item:not(.hidden)').length;
+          const newTotal   = filtered.length;
+
+          updateCounter(newVisible, newTotal);
+          updateButton(newVisible, newTotal);
+
+          btnVerMais.classList.remove('loading');
+        }, 400); // slight delay for UX
+      }
+
+      /* ---- Initial render ---- */
+      function init() {
+        const initial = ALL_IMAGES.slice(0, Math.min(INITIAL_LOAD, MAX_TOTAL));
+
+        initial.forEach(imgData => {
+          const item = createItem(imgData, false);
+          grid.appendChild(item);
+          revealObserver.observe(item);
+        });
+
+        loadedCount = initial.length;
+        updateCounter(initial.length, ALL_IMAGES.slice(0, MAX_TOTAL).length);
+        updateButton(initial.length, ALL_IMAGES.slice(0, MAX_TOTAL).length);
+      }
+
+      /* ---- Public API ---- */
+      return { init, applyFilter, loadMore };
+    })();
+
+    /* ============================================================
        CURSOR
-    ------------------------------------------ */
+    ============================================================ */
     const cursor     = document.getElementById('cursor');
     const cursorRing = document.getElementById('cursorRing');
     let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
@@ -969,7 +1110,7 @@
       requestAnimationFrame(tick);
     })();
 
-    document.querySelectorAll('a, button, .gallery-item').forEach(el => {
+    document.querySelectorAll('a, button').forEach(el => {
       el.addEventListener('mouseenter', () => {
         cursorRing.style.width = cursorRing.style.height = '60px';
         cursor.style.opacity = '0';
@@ -980,17 +1121,17 @@
       });
     });
 
-    /* ------------------------------------------
+    /* ============================================================
        NAVBAR
-    ------------------------------------------ */
+    ============================================================ */
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
       navbar.classList.toggle('scrolled', window.scrollY > 60);
     }, { passive: true });
 
-    /* ------------------------------------------
+    /* ============================================================
        HAMBURGER
-    ------------------------------------------ */
+    ============================================================ */
     const hamburger  = document.getElementById('hamburger');
     const mobileMenu = document.getElementById('mobileMenu');
 
@@ -1008,52 +1149,45 @@
       });
     });
 
-    /* ------------------------------------------
+    /* ============================================================
        HERO SLIDESHOW
-    ------------------------------------------ */
+    ============================================================ */
     (function heroSlideshow() {
       const slides      = document.querySelectorAll('.hero-slide');
       const indicesEl   = document.getElementById('heroIndicators');
       const progressBar = document.getElementById('heroProgress');
-      const DURATION    = 5000; // ms
+      const DURATION    = 5000;
       let current = 0;
       let timer;
 
-      /* Criar indicadores */
       slides.forEach((_, i) => {
         const btn = document.createElement('button');
-        btn.className    = 'hero-indicator' + (i === 0 ? ' active' : '');
-        btn.ariaLabel    = 'Slide ' + (i + 1);
+        btn.className = 'hero-indicator' + (i === 0 ? ' active' : '');
+        btn.ariaLabel = 'Slide ' + (i + 1);
         btn.addEventListener('click', () => { goTo(i); restartTimer(); });
         indicesEl.appendChild(btn);
       });
 
-      function getIndicators() {
-        return document.querySelectorAll('.hero-indicator');
-      }
+      function getIndicators() { return document.querySelectorAll('.hero-indicator'); }
 
       function goTo(next) {
         if (next === current) return;
         const prev = current;
         current = next;
-
         slides[prev].classList.remove('active');
         slides[prev].classList.add('leaving');
         setTimeout(() => slides[prev].classList.remove('leaving'), 1600);
         slides[current].classList.add('active');
-
         getIndicators().forEach((ind, i) => ind.classList.toggle('active', i === current));
         animateProgress();
       }
 
-      function advance() {
-        goTo((current + 1) % slides.length);
-      }
+      function advance() { goTo((current + 1) % slides.length); }
 
       function animateProgress() {
         progressBar.style.transition = 'none';
         progressBar.style.width = '0%';
-        void progressBar.offsetWidth; // reflow
+        void progressBar.offsetWidth;
         progressBar.style.transition = `width ${DURATION}ms linear`;
         progressBar.style.width = '100%';
       }
@@ -1064,7 +1198,6 @@
         animateProgress();
       }
 
-      /* Pausar ao hover */
       const hero = document.getElementById('inicio');
       hero.addEventListener('mouseenter', () => {
         clearInterval(timer);
@@ -1072,16 +1205,12 @@
       });
       hero.addEventListener('mouseleave', restartTimer);
 
-      /* Swipe no hero */
       let tx = 0;
       hero.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
       hero.addEventListener('touchend', e => {
         const d = tx - e.changedTouches[0].clientX;
         if (Math.abs(d) > 50) {
-          goTo(d > 0
-            ? (current + 1) % slides.length
-            : (current - 1 + slides.length) % slides.length
-          );
+          goTo(d > 0 ? (current+1)%slides.length : (current-1+slides.length)%slides.length);
           restartTimer();
         }
       });
@@ -1089,108 +1218,9 @@
       restartTimer();
     })();
 
-    /* ------------------------------------------
-       GALERIA — FILTROS
-    ------------------------------------------ */
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const btnVerMais = document.getElementById('btnVerMais');
-
-    function activeFilter() {
-      return document.querySelector('.filter-btn.active')?.dataset.filter || 'todos';
-    }
-
-    function applyFilter(filter) {
-      let idx = 0;
-      document.querySelectorAll('.gallery-item').forEach(item => {
-        const matches  = filter === 'todos' || item.dataset.category === filter;
-        const isExtra  = item.classList.contains('extra');
-        const revealed = !isExtra || item.classList.contains('showing');
-
-        if (matches && revealed) {
-          item.classList.remove('hidden');
-          item.style.transitionDelay = (idx * .05) + 's';
-          idx++;
-        } else {
-          item.classList.add('hidden');
-          item.style.transitionDelay = '0s';
-        }
-      });
-
-      // Verificar se há extras ocultos compatíveis
-      const pendingExtras = [...document.querySelectorAll('.gallery-item.extra:not(.showing)')];
-      const hasMore = pendingExtras.some(el => filter === 'todos' || el.dataset.category === filter);
-      btnVerMais.classList.toggle('hidden-btn', !hasMore);
-    }
-
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        applyFilter(btn.dataset.filter);
-      });
-    });
-
-    /* ------------------------------------------
-       VER MAIS
-    ------------------------------------------ */
-    btnVerMais.addEventListener('click', () => {
-      const filter  = activeFilter();
-      const pending = [...document.querySelectorAll('.gallery-item.extra:not(.showing)')];
-      const batch   = pending.filter(el => filter === 'todos' || el.dataset.category === filter);
-
-      batch.forEach((item, i) => {
-        setTimeout(() => {
-          item.classList.add('showing');
-          item.classList.remove('hidden');
-          revealObserver.observe(item);
-        }, i * 80);
-      });
-
-      // Após revelar, checar se ainda há mais
-      setTimeout(() => {
-        const stillPending = [...document.querySelectorAll('.gallery-item.extra:not(.showing)')];
-        const hasMore = stillPending.some(el => filter === 'todos' || el.dataset.category === filter);
-        btnVerMais.classList.toggle('hidden-btn', !hasMore);
-      }, batch.length * 80 + 200);
-    });
-
-    /* ------------------------------------------
-       SLIDER TESTEMUNHOS
-    ------------------------------------------ */
-    const track   = document.getElementById('sliderTrack');
-    const dots    = document.querySelectorAll('.dot');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    let sCurr = 0;
-    const sTotal = document.querySelectorAll('.testimonial').length;
-    let sTimer;
-
-    function goSlide(i) {
-      sCurr = (i + sTotal) % sTotal;
-      track.style.transform = `translateX(-${sCurr * 100}%)`;
-      dots.forEach((d, j) => d.classList.toggle('active', j === sCurr));
-    }
-
-    prevBtn.addEventListener('click', () => { goSlide(sCurr - 1); sReset(); });
-    nextBtn.addEventListener('click', () => { goSlide(sCurr + 1); sReset(); });
-    dots.forEach(d => d.addEventListener('click', () => { goSlide(+d.dataset.index); sReset(); }));
-
-    function sReset() {
-      clearInterval(sTimer);
-      sTimer = setInterval(() => goSlide(sCurr + 1), 5500);
-    }
-    sReset();
-
-    let sTX = 0;
-    track.addEventListener('touchstart', e => { sTX = e.touches[0].clientX; }, { passive: true });
-    track.addEventListener('touchend', e => {
-      const d = sTX - e.changedTouches[0].clientX;
-      if (Math.abs(d) > 40) { goSlide(d > 0 ? sCurr + 1 : sCurr - 1); sReset(); }
-    });
-
-    /* ------------------------------------------
+    /* ============================================================
        SCROLL REVEAL
-    ------------------------------------------ */
+    ============================================================ */
     const revealObserver = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (e.isIntersecting) {
@@ -1198,24 +1228,83 @@
           revealObserver.unobserve(e.target);
         }
       });
-    }, { threshold: .1, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: .08, rootMargin: '0px 0px -40px 0px' });
 
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-    /* ------------------------------------------
+    /* ============================================================
+       INIT GALLERY
+    ============================================================ */
+    GalleryManager.init();
+
+    /* ============================================================
+       FILTER BUTTONS
+    ============================================================ */
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        GalleryManager.applyFilter(btn.dataset.filter);
+      });
+    });
+
+    /* ============================================================
+       VER MAIS BUTTON
+    ============================================================ */
+    document.getElementById('btnVerMais').addEventListener('click', () => {
+      GalleryManager.loadMore();
+    });
+
+    /* ============================================================
+       SLIDER TESTEMUNHOS
+    ============================================================ */
+    (function testimonialSlider() {
+      const track   = document.getElementById('sliderTrack');
+      const dots    = document.querySelectorAll('.dot');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const total   = document.querySelectorAll('.testimonial').length;
+      let curr  = 0;
+      let timer;
+
+      function goSlide(i) {
+        curr = (i + total) % total;
+        track.style.transform = `translateX(-${curr * 100}%)`;
+        dots.forEach((d, j) => d.classList.toggle('active', j === curr));
+      }
+
+      function reset() {
+        clearInterval(timer);
+        timer = setInterval(() => goSlide(curr + 1), 5500);
+      }
+
+      prevBtn.addEventListener('click', () => { goSlide(curr - 1); reset(); });
+      nextBtn.addEventListener('click', () => { goSlide(curr + 1); reset(); });
+      dots.forEach(d => d.addEventListener('click', () => { goSlide(+d.dataset.index); reset(); }));
+
+      let tx = 0;
+      track.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+      track.addEventListener('touchend', e => {
+        const d = tx - e.changedTouches[0].clientX;
+        if (Math.abs(d) > 40) { goSlide(d > 0 ? curr + 1 : curr - 1); reset(); }
+      });
+
+      reset();
+    })();
+
+    /* ============================================================
        FORMULÁRIO
-    ------------------------------------------ */
-    const form = document.getElementById('contactForm');
-    form.addEventListener('submit', e => {
+    ============================================================ */
+    document.getElementById('contactForm').addEventListener('submit', e => {
       e.preventDefault();
-      const btn = form.querySelector('.btn-submit');
+      const btn  = e.target.querySelector('.btn-submit');
       const orig = btn.textContent;
       btn.textContent = 'Enviado ✓';
       btn.style.background = btn.style.borderColor = '#4caf50';
       setTimeout(() => {
         btn.textContent = orig;
         btn.style.background = btn.style.borderColor = '';
-        form.reset();
+        e.target.reset();
       }, 3000);
     });
   </script>
